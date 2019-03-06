@@ -1,0 +1,248 @@
+#TABELA CLIENTES
+
+CREATE TABLE `pdv`.`tbclientes` (
+  `idtbclientes` INT NOT NULL AUTO_INCREMENT,
+  `tbclientesnome` VARCHAR(500) NULL,
+  `tbclientescpf` INT(11) NULL,
+  `tbclientesrg` INT(8) NULL,
+  `tbclientestel1` VARCHAR(45) NULL,
+  `tbclientestel2` VARCHAR(45) NULL,
+  `tbclientesend` VARCHAR(500) NULL,
+  PRIMARY KEY (`idtbclientes`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+##
+
+#TABELA CATEGORIA
+CREATE TABLE `pdv`.`tbcategoria` (
+  `idtbcategoria` INT NOT NULL AUTO_INCREMENT,
+  `tbcategoriadesc` VARCHAR(300) NULL,
+  PRIMARY KEY (`idtbcategoria`));
+
+
+ALTER TABLE `pdv`.`tbcategoria` 
+ADD COLUMN `tbcategoriast` INT(1) NULL AFTER `tbcategoriadesc`;
+
+
+##
+
+
+
+##TABELA ENTRADA
+
+CREATE TABLE `pdv`.`entrada` (
+  `identrada` INT NOT NULL AUTO_INCREMENT,
+  `idproduto` INT NULL,
+  `movimento` SMALLINT(1) NULL,
+  `quantidade` INT NULL,
+  `data_mod` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`identrada`),
+  INDEX `Produto_idx` (`idproduto` ASC),
+  CONSTRAINT `Produto`
+    FOREIGN KEY (`idproduto`)
+    REFERENCES `pdv`.`tbprodutos` (`idtbprodutos`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+##
+
+#TABELA PRODUTOS
+CREATE TABLE `pdv`.`tbprodutos` (
+  `idtbprodutos` INT NOT NULL AUTO_INCREMENT,
+  `tbprodutosnome` VARCHAR(100) NULL,
+  `tbprodutosdescricao` VARCHAR(600) NULL,
+  `tbprodutosmarca` VARCHAR(100) NULL,
+  `tbprodutoscategoria` INT NULL,
+  `tbprodutoscusto` DOUBLE NULL,
+  `tbprodutosvenda` DOUBLE NULL,
+  `tbprodutosestoque` INT NULL,
+  PRIMARY KEY (`idtbprodutos`),
+  INDEX `categoria_idx` (`tbprodutoscategoria` ASC),
+  CONSTRAINT `categoria`
+    FOREIGN KEY (`tbprodutoscategoria`)
+    REFERENCES `pdv`.`tbcategoria` (`idtbcategoria`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+
+ALTER TABLE `pdv`.`tbprodutos` 
+ADD COLUMN `tbprodutoscodigo` VARCHAR(45) NULL AFTER `tbprodutosestoque`;
+
+
+ALTER TABLE `pdv`.`tbprodutos` 
+ADD COLUMN `tbprodutosst` INT(1) NULL AFTER `tbprodutoscodigo`;
+
+##
+
+
+
+#TABELA PREVENDA
+CREATE TABLE `pdv`.`tbprevenda` (
+  `idtbprevenda` INT NOT NULL AUTO_INCREMENT,
+  `tbprevendaproduto` INT NULL,
+  `tbprevendaquantidade` INT NULL,
+  `tbprevendadesconto` FLOAT NULL,
+  PRIMARY KEY (`idtbprevenda`));
+
+
+ALTER TABLE `pdv`.`tbprevenda` 
+ADD INDEX `idtbproduto_idx` (`tbprevendaproduto` ASC);
+ALTER TABLE `pdv`.`tbprevenda` 
+ADD CONSTRAINT `idtbproduto`
+  FOREIGN KEY (`tbprevendaproduto`)
+  REFERENCES `pdv`.`tbprodutos` (`idtbprodutos`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+
+##
+
+
+#TABELA FORMA DE PAGAMENTO
+CREATE TABLE `pdv`.`tbformapagamento` (
+  `idtbformapagamento` INT NOT NULL AUTO_INCREMENT,
+  `tbformapagamentodescricao` VARCHAR(45) NULL,
+  PRIMARY KEY (`idtbformapagamento`));
+
+ALTER TABLE `pdv`.`tbformapagamento` 
+ADD COLUMN `tbformapagamentost` INT(1) NULL AFTER `tbformapagamentodescricao`;
+
+##
+
+
+
+#TABELA VENDAS
+
+CREATE TABLE `pdv`.`tbvenda` (
+  `idtbvenda` INT NOT NULL AUTO_INCREMENT,
+  `tbvendadata` DATETIME NULL,
+  `tbvendaformapag` INT NULL,
+  PRIMARY KEY (`idtbvenda`),
+  INDEX `Forma Pag_idx` (`tbvendaformapag` ASC),
+  CONSTRAINT `Forma Pag`
+    FOREIGN KEY (`tbvendaformapag`)
+    REFERENCES `pdv`.`tbformapagamento` (`idtbformapagamento`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+ALTER TABLE `pdv`.`tbvenda` 
+ADD COLUMN `tbvendast` INT(1) NULL AFTER `tbvendaformapag`;
+
+
+
+##
+
+#TABELA VENDAS ITEM
+
+
+CREATE TABLE `pdv`.`tbvendasitem` (
+  `idtbvendasitem` INT NOT NULL AUTO_INCREMENT,
+  `tbvendasitemvendas` INT NULL,
+  `tbvendasitemproduto` INT NULL,
+  `tbvendasitemdesconto` FLOAT NULL,
+  `tbvendasitemquantidade` INT(11) NULL,
+  PRIMARY KEY (`idtbvendasitem`),
+  INDEX `Produto_idx` (`tbvendasitemproduto` ASC),
+  INDEX `Vendas_idx` (`tbvendasitemvendas` ASC),
+  CONSTRAINT `Produto`
+    FOREIGN KEY (`tbvendasitemproduto`)
+    REFERENCES `pdv`.`tbprodutos` (`idtbprodutos`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `Vendas`
+    FOREIGN KEY (`tbvendasitemvendas`)
+    REFERENCES `pdv`.`tbvenda` (`idtbvenda`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+##
+
+#TABELA TIPO PESSOA
+
+
+CREATE TABLE `pdv`.`tbpessoastipo` (
+  `idtbpessoastipo` INT NOT NULL AUTO_INCREMENT,
+  `tbpessoastipodescricao` VARCHAR(45) NULL,
+  `tbpessoastipost` INT NULL,
+  PRIMARY KEY (`idtbpessoastipo`));
+
+##
+#TABELA PESSOA
+
+
+CREATE TABLE `pdv`.`tbpessoas` (
+  `idtbpessoas` INT NOT NULL AUTO_INCREMENT,
+  `tbpessoastipo` INT NULL,
+  `tbpessoasnome` VARCHAR(500) NULL,
+  `tbpessoasrazao` VARCHAR(500) NULL,
+  `tbpessoascpfcnpj` VARCHAR(45) NULL,
+  `tbpessoastel1` VARCHAR(45) NULL,
+  `tbpessoastel2` VARCHAR(45) NULL,
+  `tbpessoasemail1` VARCHAR(300) NULL,
+  `tbpessoasemail2` VARCHAR(300) NULL,
+  `tbpessoasendereco` VARCHAR(1000) NULL,
+  `tbpessoascep` VARCHAR(45) NULL,
+  `tbpessoassite` VARCHAR(300) NULL,
+  `tbpessoasst` INT(1) NULL,
+  PRIMARY KEY (`idtbpessoas`),
+  INDEX `TipoPessoa_idx` (`tbpessoastipo` ASC),
+  CONSTRAINT `TipoPessoa`
+    FOREIGN KEY (`tbpessoastipo`)
+    REFERENCES `pdv`.`tbpessoastipo` (`idtbpessoastipo`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+
+ALTER TABLE `pdv`.`tbpessoas` 
+ADD COLUMN `tbpessoasnascimento` DATE NULL AFTER `tbpessoasnome`;
+
+ALTER TABLE `pdv`.`tbpessoas` 
+ADD COLUMN `tbpessoasdatamod` DATETIME NULL AFTER `tbpessoasst`;
+
+##
+
+
+#TABELA USUARIOS
+
+CREATE TABLE `pdv`.`tbusuarios` (
+  `idtbusuarios` INT NOT NULL AUTO_INCREMENT,
+  `tbusuarioslogin` VARCHAR(100) NULL,
+  `tbusuariossenha` VARCHAR(255) NULL DEFAULT '7c4a8d09ca3762af61e59520943dc26494f8941b',
+  `tbusuariosnome` VARCHAR(255) NULL,
+  `tbusuariosemail` VARCHAR(100) NULL,
+  `tbusuariostel` VARCHAR(45) NULL,
+  `tbusuariosdata_mod` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `tbusuariosst` SMALLINT(6) NULL,
+  PRIMARY KEY (`idtbusuarios`));
+
+
+
+ALTER TABLE `pdv`.`tbusuarios` 
+CHANGE COLUMN `tbusuariosst` `tbusuariosst` SMALLINT(6) NULL DEFAULT 1 ;
+
+
+##
+
+#TABELA ENTRADA
+CREATE TABLE `pdv`.`tbentrada` (
+  `idtbentrada` INT NOT NULL AUTO_INCREMENT,
+  `tbidproduto` INT(11) NULL,
+  `tbmovimento` INT(1) NULL,
+  `tbdata_mod` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `tbquantidade` INT(15) NULL,
+  PRIMARY KEY (`idtbentrada`),
+  INDEX `Produto_idx` (`tbidproduto` ASC),
+  CONSTRAINT `EntradaProd`
+    FOREIGN KEY (`tbidproduto`)
+    REFERENCES `pdv`.`tbprodutos` (`idtbprodutos`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+##
