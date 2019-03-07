@@ -12,4 +12,5 @@ Sistema de Vendas online.
 
 [Ver o site](http://lucasrondon.com.br/sistemas/pdv.php)
 
-<img src="http://www.lucasrondon.com.br/img/portfolio/thumbnails/pdv.jpg">
+<img src="https://github.com/lucasrondon09/Lucas/blob/master/img/portfolio/thumbnails/pdv.jpg">
+
