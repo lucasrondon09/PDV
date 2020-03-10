@@ -8,8 +8,6 @@
 
 $link = mysql_connect('localhost', 'root', '');
 
-//$link = mysql_connect('mysharedhost0135.locaweb.com.br', 'sesimt5', 'H7g3S9Nw5k');
-
 
 
 if (!$link) {
